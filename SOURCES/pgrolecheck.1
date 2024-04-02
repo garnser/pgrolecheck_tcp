@@ -1,0 +1,86 @@
+.TH PGROLECHECK 1 "2024-04-02" "pgrolecheck version 1.0" "User Commands"
+.SH NAME
+pgrolecheck \- checks the role of a PostgreSQL server and handles client connections accordingly.
+.SH SYNOPSIS
+.B pgrolecheck
+.RI [ options ]
+.RI [ \-config " FILE" ]
+.SH DESCRIPTION
+The
+.B pgrolecheck
+program listens on a specified port for incoming TCP connections, checks if the connected PostgreSQL database is in primary mode, and handles the connections based on the database's role. If the PostgreSQL server is in primary mode, it acknowledges the client connections; otherwise, it terminates them.
+.SH OPTIONS
+.TP
+.BI \-config " FILE"
+Use a specific configuration file instead of the default (/etc/pgrolecheck/pgrolecheck.conf).
+.TP
+.BI \-dbuser " USER"
+Override the database user specified in the configuration file.
+.TP
+.BI \-dbpassword " PASSWORD"
+Override the database password specified in the configuration file.
+.TP
+.BI \-dbname " NAME"
+Override the database name specified in the configuration file.
+.TP
+.BI \-dbhost " HOST"
+Override the database host specified in the configuration file.
+.TP
+.BI \-logdest " DESTINATION"
+Specify the logging destination (STDOUT, file path, or 'syslog'). This overrides the configuration file.
+.TP
+.B \-foreground
+Run in the foreground instead of daemonizing.
+.TP
+.BI \-listenport " PORT"
+Specify the port on which to listen for incoming connections. This overrides the configuration file. Default port is 60065.
+This option is mutually exclusive with \fB\-config\fP.
+.SH CONFIGURATION
+The configuration file (/etc/pgrolecheck/pgrolecheck.conf) contains settings for database connection and logging. See the full documentation or the example configuration for more details.
+.SH CONFIGURATION FILE
+The configuration file for pgrolecheck is located by default at /etc/pgrolecheck/pgrolecheck.conf. It uses the INI file format and supports the following options:
+
+.TP
+.B DBUser
+Specifies the username for connecting to the PostgreSQL database.
+
+.TP
+.B DBPassword
+Specifies the password for connecting to the PostgreSQL database.
+
+.TP
+.B DBName
+Specifies the name of the PostgreSQL database to connect to.
+
+.TP
+.B DBHost
+Specifies the host of the PostgreSQL database. For UNIX socket connections, this should be the path to the directory containing the socket file.
+
+.TP
+.B LogDest
+Specifies the destination for log output. Options include STDOUT for console output, a file path to log to a file, or 'syslog' to use the system's syslog service.
+
+Blank lines and lines starting with a semicolon (;) are ignored. Each option must be on its own line and follow the format "OptionName=Value".
+
+Example configuration:
+
+; /etc/pgrolecheck/pgrolecheck.conf
+; Configuration for pgrolecheck service
+
+DBUser=postgres
+DBPassword=secret
+DBName=mydatabase
+DBHost=/var/run/postgresql
+LogDest=/var/log/pgrolecheck.log
+
+Adjust these settings according to your environment and security policies. Sensitive information, especially DBPassword, should be protected accordingly.
+.SH FILES
+.TP
+/etc/pgrolecheck/pgrolecheck.conf
+The default configuration file.
+.SH SEE ALSO
+.BR syslog (3),
+.BR postgres (1),
+.BR systemd (1)
+.SH AUTHOR
+Written by Jonathan Petersson <jpetersson@garnser.se>.
